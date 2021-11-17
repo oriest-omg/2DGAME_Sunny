@@ -10,13 +10,18 @@ public class CharacterCollision2D : MonoBehaviour
     int nbGems;
     public Text txtNbGems;
     public Text txtNbVie;
-    public GameObject maison;
+    public  Text gem;
+    // public GameObject maison;
     int vie = 3;
     AudioSource audioSource;
     public AudioClip colSfx;
 
+    public GameObject fondu;
+    Animator fonduAnimator;
+
     private void Start() {
         audioSource = GetComponent<AudioSource>();
+        fonduAnimator = fondu.GetComponent<Animator>();
     }
     //Pour détecter les collions avec un trigger
     private void OnTriggerEnter2D(Collider2D col) 
@@ -26,10 +31,14 @@ public class CharacterCollision2D : MonoBehaviour
         {
             nbGems++;
             txtNbGems.text = nbGems.ToString();
+            PlayerPrefs.SetString("gem",gem.text);
+            GameObject.Find("DontDestroyOnLoad").GetComponent<DontDestroyOnLoad>().gem = gem;
             Destroy(col.gameObject);
-            if(nbGems >= 1) // todo remettre 5
+
+            if(nbGems >= 5) // todo remettre 5
             {
-                Destroy(maison.GetComponent<Collider2D>());
+                
+                Destroy(GameObject.Find("house").GetComponent<Collider2D>());
             }
         }
         if(col.gameObject.tag == "vie")
@@ -50,6 +59,7 @@ public class CharacterCollision2D : MonoBehaviour
         }
         if(col.gameObject.tag == "fin")// Si on touche la fin
         {
+            transform.position = new Vector3(-0.762000024f,0.469999999f,0);
             SceneManager.LoadScene("Jeu 2");
         }
     }
@@ -64,6 +74,13 @@ public class CharacterCollision2D : MonoBehaviour
         {
             ReloadLevel();
         }
+    }
+    public void RetourMenu()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene("Menu");
+        Destroy(GameObject.Find("DontDestroyOnLoad"));
+
     }
 
     public void ReloadLevel()
